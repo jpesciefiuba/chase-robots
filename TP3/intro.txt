@@ -1,0 +1,52 @@
+Chase (Robots):
+
+Dinamica del juego:
+- Jugador spawnea en el centro de la grilla.
+- El jugador se mueve 1 celda.
+- Los robots se mueven a un casillero en la direccion del jugador(despues de haber buscado el shortest path)
+-
+
+
+
+
+Como almacenar el estado del juego:
+- Lista de listas donde la informacion de cada fila es una lista y dentro de ella hay x cantidad de numeros que indican el estado
+de cada celda de la grilla(si ahora se ubica el jugador en ella, si esta vacia,
+
+
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+[0, 0, 2, 0, 0, 0, 0, 0, 0, 0]
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+0 = Celda Vacia
+1 = Celda con el jugador
+2 = Celda con robots
+3 = Celda con escombro
+
+
+Funciones:
+
+- Dibujado
+    -> Dibujar Grilla
+    -> Dibujar Robots
+        -> Generar posición aleatoria de robots
+    -> Dibujar Player
+        -> Generar posición aleatoria de player
+    -> Dibujar Colisiones
+- Teletransportar jugador
+    -> Averiguar y procesar ubicación del mouse
+- Terminar Juego
+    -> Detectar Teletransportar a Escombros
+    -> Choque con robot
+- Detectar Colision entre robots
+- Mover
+    -> Robots
+    -> Jugador
+    -> Escombros
+- Pasar de nivel
+    -> Generar posición aleatoria de player
+    -> Generar posición aleatoria de robots
+    ->
