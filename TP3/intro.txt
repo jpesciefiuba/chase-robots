@@ -49,4 +49,4 @@ Funciones:
 - Pasar de nivel
     -> Generar posición aleatoria de player
     -> Generar posición aleatoria de robots
-    ->
+    -> aumentar la cantidad de robots
