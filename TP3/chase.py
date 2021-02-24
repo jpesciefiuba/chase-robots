@@ -62,8 +62,13 @@ def hay_robot(tablero, x, y):
         return True
     return False
 
-def trasladar_jugador(jugador, x, y):
-    x, y = 
+def trasladar_jugador(jugador, dx, dy):
+    x, y = jugador 
+    x   += dx
+    y   += dy
+    return x, y   
+
+
 
 
 def terminado(juego):
