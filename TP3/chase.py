@@ -37,28 +37,27 @@ def crear_juego():
     como estamos creando el juego, el mismo no esta temrinado, o sea wqu ela funcion terminado(juego) devuelve False"""
      
     jugador   = generar_jugador()
-    escombros = crear_tablero()
-    robots    = crear_tablero()
+    tablero = crear_tablero()  
     nivel     = 1
     
-    juego = jugador, robots, escombros, nivel
+    juego = jugador, tablero, nivel
     return juego 
 
 def agregar_escombro(escombros, x, y):
-    escombros[y][x] = ESCOMBRO
+    tablero[y][x] = ESCOMBRO
 
-def agregar_escombro(robots, x, y):
-    robots[y][x] = ROBOT
+def agregar_escombro(tablero, x, y):
+    tablero[y][x] = ROBOT
 
 def hay_escombro(juego, x, y):
-    jugador, robots, escombros, nivel = juego
-    if escombros[y][x] == ESCOMBRO:
+    jugador, tablero, nivel = juego
+    if tablero[y][x] == ESCOMBRO:
         return True
     return False
 
 def hay_robot(tablero, x, y):
-    jugador, robots, escombros, nivel = juego
-    if robots[y][x] == ROBOT:
+    jugador, tablero, nivel = juego
+    if tablero[y][x] == ROBOT:
         return True
     return False
 
@@ -69,13 +68,13 @@ def trasladar_jugador(jugador, dx, dy):
     return x, y   
 
 
-
+def 
 
 def terminado(juego):
     """el juego termina cuadno el jugador se choca con un robot, o sea, una vez que en la posicion 
     x,y hay un robot y el jugador a la vez"""
-    jugador, robots, escombros, nivel = juego
-    posx, posy                        = jugador
+    jugador, tablero, nivel = juego
+    posx, posy              = jugador
     if hay_robot(juego, posx, posy):
         return True
     return False
