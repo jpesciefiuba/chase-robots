@@ -60,8 +60,8 @@ def main():
                         x, y = ev.x, ev.y
                         if (x >= 0 and x <= ANCHO_INTERFAZ) and (y >= MARGEN_SUPERIOR and y <= ALTO_INTERFAZ):
                             jugador, tablero, puntaje = juego
-                            jugador = chase.trasladar_jugador(jugador, ev.x, ev.y)
-                            juego = jugador, tablero, puntaje
+                            jugador, tablero, puntaje = chase.trasladar_jugador(juego, ev.x, ev.y)
+                            
 
                         if (x >= 100 and x <= 300) and (y >= ((MARGEN_SUPERIOR/2)/2) and y <= (MARGEN_SUPERIOR/2)/2+75):
                             juego = chase.teletransportar_jugador(juego)  
