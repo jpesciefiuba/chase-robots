@@ -101,6 +101,11 @@ def mover_jugador(juego, horizontal, vertical):
     x_nueva, y_nueva = x +  horizontal, y + vertical 
     if x_nueva > ANCHO or y_nueva > ALTO or x_nueva < 0 or y_nueva:
         return jugador
+
+    if hay_escombro(juego,x_nueva, y_nueva):
+        tablero = actualizar_tablero(VACIO, tablero, x_nueva, y_nueva)
+        tablero = actualizar_tablero(ESCOMBRO,tablero, x_nueva+ horizontal, y_nueva + horizontal)
+        
     return nuevo_jugador
 
 def trasladar_jugador(juego, dx, dy):
