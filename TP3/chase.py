@@ -95,8 +95,16 @@ def agregar_robots(juego):
             tablero[celda[1]][celda[0]] = 2
         if celda == jugador:
             tablero[celda[1]+1][celda[0]+1] = 2
+def mover_jugador(juego, horizontal, vertical):
+    jugador, tablero, nivel = juego 
+    x, y = jugador
+    x_nueva, y_nueva = x +  horizontal, y + vertical 
+    if x_nueva > ANCHO or y_nueva > ALTO or x_nueva < 0 or y_nueva:
+        return jugador
+    return nuevo_jugador
 
-def trasladar_jugador(jugador, dx, dy):
+def trasladar_jugador(juego, dx, dy):
+    jugador, tablero, nivel = juego
     """
     Esta función se encarga de tomar las coordenadas x e y donde el usuario clickeo, verifica en que dirección se tiene que mover al jugador
     y lo mueva 1 bloque en dicha dirección.
@@ -110,29 +118,29 @@ def trasladar_jugador(jugador, dx, dy):
         return jugador
     if x == x_jugador:
         if y > y_jugador:
-            jugador = x_jugador, y_jugador + ABAJO
+            jugador = mover_jugador(juego, 0 , ABAJO)
             return jugador  
         if y < y_jugador:
-            jugador = x_jugador, y_jugador + ARRIBA
+            jugador = mover_jugador(juego, 0 , ARRIBA)
             return jugador
     elif y == y_jugador:
         if x > x_jugador:
-            jugador = x_jugador+DERECHA, y_jugador
+            jugador = mover_jugador(juego, DERECHA , 0)
             return jugador 
         if x < x_jugador:    
-            jugador = x_jugador+IZQUIERDA, y_jugador
+            jugador = mover_jugador(juego,IZQUIERDA , 0)
             return jugador
     elif x > x_jugador and y > y_jugador:
-        jugador = x_jugador+ABAJO, y_jugador+ABAJO
+        jugador = mover_jugador(juego, DERECHA , ABAJO)
         return jugador
     elif x < x_jugador and y < y_jugador:
-        jugador = x_jugador+ARRIBA, y_jugador+ARRIBA
+        jugador = mover_jugador(juego, IZQUIERDA , ARRIBA)
         return jugador
     elif x > x_jugador and y < y_jugador:
-        jugador = x_jugador+DERECHA, y_jugador+ARRIBA
+        jugador = mover_jugador(juego, DERECHA , ARRIBA)
         return jugador
     elif x < x_jugador and y > y_jugador:
-        jugador = x_jugador+IZQUIERDA, y_jugador+ABAJO
+        jugador = mover_jugador(juego, IZQUIERDA , ABAJO)
         return jugador
     
 def teletransportar_jugador(juego):
