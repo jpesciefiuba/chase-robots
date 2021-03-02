@@ -67,15 +67,12 @@ def crear_juego():
 
 def hay_escombro(juego, x, y):
     jugador, tablero, nivel = juego
-    if tablero[y][x] == ESCOMBRO:
-        return True
-    return False
+    return tablero[y][x] == ESCOMBRO:
+
 
 def hay_robot(juego, x, y):
     jugador, tablero, nivel = juego
-    if tablero[y][x] == ROBOT:
-        return True
-    return False
+    return tablero[y][x] == ROBOT:
 
 def agregar_robots(juego):
     """
