@@ -67,12 +67,15 @@ def crear_juego():
 
 def hay_escombro(juego, x, y):
     jugador, tablero, nivel = juego
-    return tablero[y][x] == ESCOMBRO:
-
+    if tablero[y][x] == ESCOMBRO:
+        return True
+    return False
 
 def hay_robot(juego, x, y):
     jugador, tablero, nivel = juego
-    return tablero[y][x] == ROBOT:
+    if tablero[y][x] == ROBOT:
+        return True
+    return False
 
 def agregar_robots(juego):
     """
@@ -92,22 +95,8 @@ def agregar_robots(juego):
             tablero[celda[1]][celda[0]] = 2
         if celda == jugador:
             tablero[celda[1]+1][celda[0]+1] = 2
-def mover_jugador(juego, horizontal, vertical):
-    jugador, tablero, nivel = juego 
-    x, y = jugador
-    x_nueva, y_nueva = x +  horizontal, y + vertical 
-    if x_nueva > ANCHO or y_nueva > ALTO or x_nueva < 0 or y_nueva:
-        nuevo_jugador = jugador
 
-    if hay_escombro(juego,x_nueva, y_nueva):
-        tablero = actualizar_tablero(VACIO, tablero, x_nueva, y_nueva)
-        tablero = actualizar_tablero(ESCOMBRO,tablero, x_nueva+ horizontal, y_nueva + horizontal)
-
-    juego = nuevo_jugador, tablero, nivel
-    return juego
-
-def trasladar_jugador(juego, dx, dy):
-    jugador, tablero, nivel = juego
+def trasladar_jugador(jugador, dx, dy):
     """
     Esta función se encarga de tomar las coordenadas x e y donde el usuario clickeo, verifica en que dirección se tiene que mover al jugador
     y lo mueva 1 bloque en dicha dirección.
@@ -118,33 +107,33 @@ def trasladar_jugador(juego, dx, dy):
     x_jugador, y_jugador = jugador
     
     if x == x_jugador and y == y_jugador:
-        return juego
+        return jugador
     if x == x_jugador:
         if y > y_jugador:
-            juego = mover_jugador(juego, 0 , ABAJO)
-            return juego  
+            jugador = x_jugador, y_jugador + ABAJO
+            return jugador  
         if y < y_jugador:
-            juego = mover_jugador(juego, 0 , ARRIBA)
-            return juego
+            jugador = x_jugador, y_jugador + ARRIBA
+            return jugador
     elif y == y_jugador:
         if x > x_jugador:
-            juego = mover_jugador(juego, DERECHA , 0)
-            return juego 
+            jugador = x_jugador+DERECHA, y_jugador
+            return jugador 
         if x < x_jugador:    
-            juego = mover_jugador(juego,IZQUIERDA , 0)
-            return juego
+            jugador = x_jugador+IZQUIERDA, y_jugador
+            return jugador
     elif x > x_jugador and y > y_jugador:
-        juego = mover_jugador(juego, DERECHA , ABAJO)
-        return juego
+        jugador = x_jugador+ABAJO, y_jugador+ABAJO
+        return jugador
     elif x < x_jugador and y < y_jugador:
-        juego = mover_jugador(juego, IZQUIERDA , ARRIBA)
-        return juego
+        jugador = x_jugador+ARRIBA, y_jugador+ARRIBA
+        return jugador
     elif x > x_jugador and y < y_jugador:
-        juego = mover_jugador(juego, DERECHA , ARRIBA)
-        return juego
+        jugador = x_jugador+DERECHA, y_jugador+ARRIBA
+        return jugador
     elif x < x_jugador and y > y_jugador:
-        juego = mover_jugador(juego, IZQUIERDA , ABAJO)
-        return juego
+        jugador = x_jugador+IZQUIERDA, y_jugador+ABAJO
+        return jugador
     
 def teletransportar_jugador(juego):
     """
