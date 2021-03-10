@@ -151,6 +151,13 @@ def perseguir_a_jugador(juego):
                 juego = juegonuevo
     return juego
 
+def avanzar(juego):
+    jugador, tablero, nivel = juego 
+    x_jugador, y_jugador = jugador
+    if not terminado(juego):
+        juego = perseguir_a_jugador(juego)
+
+    return juego 
 
 def terminado(juego):
     """el juego termina cuadno el jugador se choca con un robot, o sea, una vez que en la posicion 
