@@ -177,6 +177,7 @@ def acercar_robot(x, y, juego):
         tablero[y + yfinal][x + x_final] == ROBOT
     
     juego = jugador, tablero, nivel
+    return juego 
 
 def buscar_n_en_tablero(n, tablero):
     """
