@@ -54,6 +54,7 @@ def main():
                 chase.agregar_robots(juego)
 
                 while not chase.terminado(juego):
+                    juego = chase.avanzar(juego)
                     chase.dibujar_juego(juego)
                     ev = gamelib.wait()
                     if ev.type == gamelib.EventType.ButtonPress:
