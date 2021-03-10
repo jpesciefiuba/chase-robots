@@ -67,15 +67,13 @@ def crear_juego():
 
 def hay_escombro(juego, x, y):
     jugador, tablero, nivel = juego
-    if tablero[y][x] == ESCOMBRO:
-        return True
-    return False
+    return tablero[y][x] == ESCOMBRO
+
 
 def hay_robot(juego, x, y):
     jugador, tablero, nivel = juego
-    if tablero[y][x] == ROBOT:
-        return True
-    return False
+    return tablero[y][x] == ROBOT
+
 
 def agregar_robots(juego):
     """
@@ -145,6 +143,15 @@ def teletransportar_jugador(juego):
     jugador = x, y
     return jugador, tablero, puntaje
 
+def perseguir_a_jugador(juego):
+    for i in range(ALTO):
+        for j in range(ANCHO):
+            if tablero[j][i] == ROBOT:
+                juegonuevo = acercar_robot(i, j, juego)
+                juego = juegonuevo
+    return juego
+
+
 def terminado(juego):
     """el juego termina cuadno el jugador se choca con un robot, o sea, una vez que en la posicion 
     x,y hay un robot y el jugador a la vez"""
@@ -155,6 +162,22 @@ def terminado(juego):
 
 
 #Funciones auxiliares
+
+def acercar_robot(x, y, juego):
+    jugador, tablero, nivel = juego 
+    x_jugador, y_jugador = jugador
+    x_resultante = x_jugador - x
+    y_resultante = y_jugador - y 
+    x_final = x_resultante/abs(x_resultante)
+    y_final = y_resultante/abs(y_resultante)
+    tablero[y][x] = VACIO
+    if tablero[y + y_final][x + x_final]== ESCOMBRO or tablero[y + y_final][x + x_final] == ROBOT:
+        tablero[y + y_final][x + x_final] == ESCOMBRO
+    else:
+        tablero[y + yfinal][x + x_final] == ROBOT
+    
+    juego = jugador, tablero, nivel
+
 def buscar_n_en_tablero(n, tablero):
     """
     Esta función se encarga de buscar un elemento n dado por parámetro, dentro del tablero del juego, tambien dado por 
