@@ -123,7 +123,8 @@ def teletransportar_jugador(juego):
     jugador, tablero, nivel = juego
     x, y = generar_celda_aleatoria()
     jugador = x, y
-    return jugador, tablero, nivel
+    juego = jugador, tablero, nivel
+    return juego 
 
 def perseguir_a_jugador(juego):
     jugador, tablero, nivel = juego 
@@ -133,6 +134,7 @@ def perseguir_a_jugador(juego):
                 juegonuevo = acercar_robot(x, y, juego)
                 juego = juegonuevo
     return juego
+
 def avanzar(juego):
     jugador, tablero, nivel = juego 
     x_jugador, y_jugador = jugador
@@ -142,6 +144,7 @@ def avanzar(juego):
             nivel += 1
             juego = crear_juego(nivel)
     return juego 
+
 def terminado(juego):
     """el juego termina cuadno el jugador se choca con un robot, o sea, una vez que en la posicion 
     x,y hay un robot y el jugador a la vez"""
