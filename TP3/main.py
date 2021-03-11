@@ -16,7 +16,7 @@ VACIO       = 0
 JUGADOR     = 1
 ROBOT       = 2
 ESCOMBRO    = 3
-ESPERA_DESCENDER = 20
+ESPERA_DESCENDER = 12
 
 #CONSTANTES DE DIBUJADO
 ANCHO_INTERFAZ = 1350
@@ -75,7 +75,7 @@ def main():
                         if timer_bajar == 0:
                             timer_bajar = ESPERA_DESCENDER
                             # Descender la pieza automáticamente
-                            juego = chase.perseguir_a_jugador(juego)
+                            juego = chase.avanzar(juego)
                                 
                     elif chase.terminado(juego):
                         gamelib.draw_begin()    

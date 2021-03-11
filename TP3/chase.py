@@ -51,7 +51,7 @@ Cosas que faltan por implementar:
 
 #Funciones principales
 
-def crear_juego(nivel=None):
+def crear_juego(nivel=1):
     """
     Esta función inicializa el estado del juego, con la posición del jugador, y la grilla 
     o tablero donde vana a estar los escombros y los robots en un principio va a estar vacia 
@@ -60,25 +60,18 @@ def crear_juego(nivel=None):
 
     jugador   = generar_celda_aleatoria()
     tablero = crear_tablero()
-    if nivel is None:
-        nivel = 1
-    else:
-        nivel = nivel
-
     juego = jugador, tablero, nivel
     return juego 
 
 def hay_escombro(juego, x, y):
     jugador, tablero, nivel = juego
-    if tablero[y][x] == ESCOMBRO:
-        return True
-    return False
+    return tablero[y][x] == ESCOMBRO 
+
 
 def hay_robot(juego, x, y):
     jugador, tablero, nivel = juego
-    if tablero[y][x] == ROBOT:
-        return True
-    return False
+    return tablero[y][x] == ROBOT
+
 
 def agregar_robots(juego):
     """
@@ -162,6 +155,11 @@ def avanzar(juego):
     x_jugador, y_jugador = jugador
     if not terminado(juego):
         juego = perseguir_a_jugador(juego)
+
+        if tablero_sin_robots(juego):
+            nivel += 1
+            juego = crear_juego(nivel)
+
     return juego 
 
 def terminado(juego):
@@ -174,6 +172,15 @@ def terminado(juego):
 
 
 #Funciones auxiliares
+
+def tablero_sin_robots(juego):
+    jugador, tablero, nivel = juego
+    for y in range(len(tablero)):
+        for x in range(len(tablero[0])):
+            if tablero[y][x] == ROBOT:
+                return False
+    return True
+
 
 def acercar_robot(x, y, juego):
     jugador, tablero, nivel = juego 
