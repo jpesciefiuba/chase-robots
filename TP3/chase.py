@@ -134,6 +134,10 @@ def trasladar_jugador(juego, dx, dy):
     return jugador
 
 
+def mover_escombro(juego, x, y):
+    return 0
+
+
 def teletransportar_jugador(juego):
     """
     Esta función se encarga de teletransportar al jugador a una celda aleatoria del tablero.
