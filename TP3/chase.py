@@ -13,6 +13,7 @@ VACIO       = 0
 JUGADOR     = 1
 ROBOT       = 2
 ESCOMBRO    = 3
+CANTIDAD_ROBOTS_BASE = 10 # Cantidad de robots que habrá en el juego en el nivel 1.
 
 #CONSTANTES DE DIBUJADO
 ANCHO_INTERFAZ = 1350
@@ -23,32 +24,8 @@ MARGEN_SUPERIOR = 150
 import random
 import gamelib
 
-
-"""
-Modificaciones:
--> Hice las funciones de dibujado, podriamos cambiar/mejorar varias cosas pero por el momento nos sirve como un MVP (Minimum Viable Product).
-
--> Borre algunas funciones como por ejemplo agregar_escombro o agregar_robot y las reemplace por una unica funcion auxiliar a la que le tenemos que pasar
-por parámetro un N para poner en las coordenadas x, y (en el caso de robots serìa 2, etc.)
-
--> Modifique la funcion trasladar_jugador para que tome las coordenadas x e y donde el usuario clickeo, verifique en que direccion se tiene que mover al jugador
-y lo mueva 1 bloque en dicha direccion.
-
--> Agregué la función teletransportar que cambia las coordenadas del usuario y en el caso de que se lo teletransporte a una celda con escombros, termine el juego.
-
--> Modifique la funcion generar_jugador para que no solo la podamos usar para generar una posicion aleatoria para el jugador si no que tambien sirva para generar posiciones 
-aleatorias para colocar los robots en el tablero.
-
--> Agregué la función agregar robots para agregar los robots al tablero del juego una vez que empieza el juego.
-
-
-Cosas que faltan por implementar:
--> IA para mover a los robots
-    -> Funcion que detecte cuando 2 robots choquen y ponga un escombro en esa posicion.
-
-
-"""
-
+#- Modificar la funcion trasladar_jugador para que cuando se mueva el jugador hacia x celda, si en esa x celda habia un escombro, el jugador "empuje" el escombro una posición hacia la dirección que se movio el jugador.
+#- Pasar 
 #Funciones principales
 
 def crear_juego(nivel=1):
@@ -65,16 +42,6 @@ def crear_juego(nivel=1):
     juego = agregar_robots(juego)
     return juego 
 
-def hay_escombro(juego, x, y):
-    jugador, tablero, nivel = juego
-    return tablero[y][x] == ESCOMBRO 
-
-
-def hay_robot(juego, x, y):
-    jugador, tablero, nivel = juego
-    return tablero[y][x] == ROBOT
-
-
 def agregar_robots(juego):
     """
     Esta función se encarga de agregar los robots a la grilla, generando posiciones aleatorias mediante la funcion generar_celda_aleatoria
@@ -87,7 +54,7 @@ def agregar_robots(juego):
     """
     jugador, tablero, nivel = juego
 
-    for i in range(10*nivel):
+    for i in range(CANTIDAD_ROBOTS_BASE*nivel):
         celda = generar_celda_aleatoria()
         if celda != jugador:
             tablero[celda[1]][celda[0]] = 2
@@ -102,7 +69,7 @@ def trasladar_jugador(juego, dx, dy):
     """
     jugador, tablero, nivel = juego
     #Proceso las coordenadas y averiguo en que celda clickeo.
-    x, y = int(dx//30), int((dy-150)//30)
+    x, y = int(dx//ANCHO_Y_ALTO_CELDA), int((dy-MARGEN_SUPERIOR)//ANCHO_Y_ALTO_CELDA)
     x_jugador, y_jugador = jugador
     
     if x == x_jugador and y == y_jugador:
@@ -112,12 +79,17 @@ def trasladar_jugador(juego, dx, dy):
             jugador = x_jugador, y_jugador + ABAJO 
         else:
             jugador = x_jugador, y_jugador + ARRIBA
+<<<<<<< HEAD
+=======
+            return jugador
+>>>>>>> 6e723ee745e0fe14d1e55854d426018754017f06
 
     elif y == y_jugador:
         if x > x_jugador:
             jugador = x_jugador+DERECHA, y_jugador
         else:    
             jugador = x_jugador+IZQUIERDA, y_jugador
+<<<<<<< HEAD
 
     elif x > x_jugador and y > y_jugador:
         jugador = x_jugador+ABAJO, y_jugador+ABAJO
@@ -128,6 +100,22 @@ def trasladar_jugador(juego, dx, dy):
     elif x > x_jugador and y < y_jugador:
         jugador = x_jugador+DERECHA, y_jugador+ARRIBA
         
+=======
+            return jugador
+
+    elif x > x_jugador and y > y_jugador:
+        jugador = x_jugador+ABAJO, y_jugador+ABAJO
+        return jugador
+
+    elif x < x_jugador and y < y_jugador:
+        jugador = x_jugador+ARRIBA, y_jugador+ARRIBA
+        return jugador
+
+    elif x > x_jugador and y < y_jugador:
+        jugador = x_jugador+DERECHA, y_jugador+ARRIBA
+        return jugador
+
+>>>>>>> 6e723ee745e0fe14d1e55854d426018754017f06
     elif x < x_jugador and y > y_jugador:
         jugador = x_jugador+IZQUIERDA, y_jugador+ABAJO
     
@@ -143,8 +131,12 @@ def teletransportar_jugador(juego):
     Esta función se encarga de teletransportar al jugador a una celda aleatoria del tablero.
     """
     jugador, tablero, puntaje = juego
+<<<<<<< HEAD
     x, y = generar_celda_aleatoria()
     jugador = x, y
+=======
+    jugador = generar_celda_aleatoria()
+>>>>>>> 6e723ee745e0fe14d1e55854d426018754017f06
     return jugador, tablero, puntaje
 
 def perseguir_a_jugador(juego):
@@ -172,12 +164,24 @@ def terminado(juego):
     """el juego termina cuadno el jugador se choca con un robot, o sea, una vez que en la posicion 
     x,y hay un robot y el jugador a la vez"""
     posx, posy = juego[0][0], juego[0][1]
+<<<<<<< HEAD
     if hay_robot(juego, posx, posy):
         return True
     return False
+=======
+    return hay_n(juego, ROBOT, posx, posy)
+    
+>>>>>>> 6e723ee745e0fe14d1e55854d426018754017f06
 
 
 #Funciones auxiliares
+def hay_n(juego, n, x, y):
+    """
+    Esta función sirve para averiguar si en una celda dada por parámetro, se encuentra un elemento n que puede ser, por ejemplo, ROBOT o ESCOMBRO. 
+    Devuelve True si esta ahí o false si no lo esta.
+    """
+    jugador, tablero, nivel = juego
+    return tablero[y][x] == n
 
 def tablero_sin_robots(juego):
     jugador, tablero, nivel = juego
@@ -187,8 +191,11 @@ def tablero_sin_robots(juego):
                 return False
     return True
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 6e723ee745e0fe14d1e55854d426018754017f06
 def acercar_robot(x, y, juego):
     jugador, tablero, nivel = juego 
     x_jugador, y_jugador = jugador
@@ -235,7 +242,6 @@ def acercar_robot(x, y, juego):
         juego = jugador, tablero, nivel
         return juego
     
-    
 def buscar_n_en_tablero(n, tablero):
     """
     Esta función se encarga de buscar un elemento n dado por parámetro, dentro del tablero del juego, tambien dado por 
@@ -273,9 +279,7 @@ def generar_celda_aleatoria():
     """
     Esta función devuelve una tupla con un par de valores (x, y) aleatorios dentro del tablero.
     """
-    x = random.randint(0, ANCHO - 1)
-    y = random.randint(0,ALTO - 1)
-    return x, y
+    return random.randint(0, ANCHO - 1), random.randint(0,ALTO - 1)
 
 
 
@@ -285,20 +289,20 @@ def dibujar_pantalla_de_inicio():
     Esta función se encarga de dibujar la pantalla de inicio del juego.
     """
     gamelib.draw_image('media/logointro.gif', 275, ALTO_INTERFAZ//25)
-    gamelib.draw_image('media/boton.gif', (ANCHO_INTERFAZ//2)-150, (ALTO_INTERFAZ - ALTO_INTERFAZ//5))
+    gamelib.draw_image('media/boton.gif', (ANCHO_INTERFAZ//2)-MARGEN_SUPERIOR, (ALTO_INTERFAZ - ALTO_INTERFAZ//5))
     gamelib.draw_text('Jugar', ANCHO_INTERFAZ//2, (ALTO_INTERFAZ//2+ALTO_INTERFAZ//3+15), anchor = 'c', size = 30)
     
 def dibujar_grilla():
     #Dibujo los bordes del juego.
-    gamelib.draw_polygon([0, 150, 1350, 150, 1350, 1050, 0, 1050], outline='white', fill='white')
+    gamelib.draw_polygon([0, MARGEN_SUPERIOR, ANCHO_INTERFAZ, MARGEN_SUPERIOR, ANCHO_INTERFAZ, ALTO_INTERFAZ, 0, ALTO_INTERFAZ], outline='white', fill='white')
     
     #Dibujo columnas.
     for i in range(ANCHO):
-        gamelib.draw_line(0+i*ANCHO_Y_ALTO_CELDA, 150, 0+i*ANCHO_Y_ALTO_CELDA, 1050, fill='black', width=1)
+        gamelib.draw_line(0+i*ANCHO_Y_ALTO_CELDA, MARGEN_SUPERIOR, 0+i*ANCHO_Y_ALTO_CELDA, ALTO_INTERFAZ, fill='black', width=1)
         
     #Dibujo filas.
     for i in range(ALTO):
-        gamelib.draw_line(0, 150+i*ANCHO_Y_ALTO_CELDA, 1350, 150+i*ANCHO_Y_ALTO_CELDA, fill='black', width=1)
+        gamelib.draw_line(0, MARGEN_SUPERIOR+i*ANCHO_Y_ALTO_CELDA, ANCHO_INTERFAZ, MARGEN_SUPERIOR+i*ANCHO_Y_ALTO_CELDA, fill='black', width=1)
 
 def dibujar_panel_superior(juego):
     """
@@ -329,22 +333,19 @@ def dibujar_juego(juego):
     #Dibujo robots.
     robots = buscar_n_en_tablero(2, juego[1])
     for i in range(len(robots)):
-        x_celda = robots[i][0]
-        y_celda = robots[i][1]
-        gamelib.draw_image("media/robot.gif", ANCHO_Y_ALTO_CELDA*x_celda, 150+ANCHO_Y_ALTO_CELDA*y_celda)
+        x_celda, y_celda = robots[i][0], robots[i][1]
+        gamelib.draw_image("media/robot.gif", ANCHO_Y_ALTO_CELDA*x_celda, MARGEN_SUPERIOR+ANCHO_Y_ALTO_CELDA*y_celda)
     
     #Dibujo escombros
     escombros = buscar_n_en_tablero(3, juego[1])
     for i in range(len(escombros)):
-        x_celda = escombros[i][0]
-        y_celda = escombros[i][1]
-        gamelib.draw_image("media/escombros.gif", ANCHO_Y_ALTO_CELDA*x_celda, 150+ANCHO_Y_ALTO_CELDA*y_celda)
+        x_celda, y_celda = escombros[i][0], escombros[i][1]
+        gamelib.draw_image("media/escombros.gif", ANCHO_Y_ALTO_CELDA*x_celda, MARGEN_SUPERIOR+ANCHO_Y_ALTO_CELDA*y_celda)
 
     #Dibujo jugador
     jugador = juego[0]
-    x_celda = jugador[0]
-    y_celda = jugador[1]
-    gamelib.draw_image("media/astronauta.gif", 1+ANCHO_Y_ALTO_CELDA*x_celda, 150+ANCHO_Y_ALTO_CELDA*y_celda)
+    x_celda, y_celda = jugador[0], jugador[1]
+    gamelib.draw_image("media/astronauta.gif", 1+ANCHO_Y_ALTO_CELDA*x_celda, MARGEN_SUPERIOR+ANCHO_Y_ALTO_CELDA*y_celda)
 
 def dibujar_game_over():
     """
@@ -353,7 +354,7 @@ def dibujar_game_over():
     """
     gamelib.draw_rectangle(0, 0, ANCHO_INTERFAZ, ALTO_INTERFAZ, fill='black')
     gamelib.draw_text('GAME OVER', ANCHO_INTERFAZ//2, ALTO_INTERFAZ//2 - MARGEN_SUPERIOR//2, size = 80, fill = 'red')
-    gamelib.draw_image('media/boton.gif', ANCHO_INTERFAZ//2-150, ALTO_INTERFAZ//2+50)
+    gamelib.draw_image('media/boton.gif', ANCHO_INTERFAZ//2-MARGEN_SUPERIOR, ALTO_INTERFAZ//2+50)
     gamelib.draw_text('Volver', ANCHO_INTERFAZ//2, ALTO_INTERFAZ//2+80, size = 20)
     gamelib.draw_text('a jugar', ANCHO_INTERFAZ//2, ALTO_INTERFAZ//2+110, size = 20)
 
