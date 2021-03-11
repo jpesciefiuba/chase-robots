@@ -58,7 +58,7 @@ def main():
                         gamelib.draw_begin()
                         chase.dibujar_juego(juego)
                         gamelib.draw_end()
-<<<<<<< HEAD
+
                         ev = gamelib.wait()
                         if ev.type == gamelib.EventType.ButtonPress:
                             x, y = ev.x, ev.y
@@ -67,16 +67,7 @@ def main():
                                 jugador = chase.trasladar_jugador(juego, ev.x, ev.y)
                                 juego = jugador, tablero, puntaje
                                 juego = chase.avanzar(juego)
-=======
-                        for event in gamelib.get_events():
-                            if ev.type == gamelib.EventType.ButtonPress:
-                                x, y = ev.x, ev.y
-                                if (x >= 0 and x <= ANCHO_INTERFAZ) and (y >= MARGEN_SUPERIOR and y <= ALTO_INTERFAZ):
-                                    jugador, tablero, puntaje = juego
-                                    jugador = chase.trasladar_jugador(jugador, ev.x, ev.y)
-                                    juego = jugador, tablero, puntaje
-                                    juego = chase.perseguir_a_jugador(juego)
->>>>>>> 6e723ee745e0fe14d1e55854d426018754017f06
+
 
                                 if (x >= 100 and x <= MARGEN_SUPERIOR) and (y >= ((MARGEN_SUPERIOR/2)/2) and y <= (MARGEN_SUPERIOR/2)/2+75):
                                     juego = chase.teletransportar_jugador(juego) 

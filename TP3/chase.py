@@ -79,17 +79,13 @@ def trasladar_jugador(juego, dx, dy):
             jugador = x_jugador, y_jugador + ABAJO 
         else:
             jugador = x_jugador, y_jugador + ARRIBA
-<<<<<<< HEAD
-=======
-            return jugador
->>>>>>> 6e723ee745e0fe14d1e55854d426018754017f06
 
     elif y == y_jugador:
         if x > x_jugador:
             jugador = x_jugador+DERECHA, y_jugador
         else:    
             jugador = x_jugador+IZQUIERDA, y_jugador
-<<<<<<< HEAD
+
 
     elif x > x_jugador and y > y_jugador:
         jugador = x_jugador+ABAJO, y_jugador+ABAJO
@@ -100,22 +96,7 @@ def trasladar_jugador(juego, dx, dy):
     elif x > x_jugador and y < y_jugador:
         jugador = x_jugador+DERECHA, y_jugador+ARRIBA
         
-=======
-            return jugador
 
-    elif x > x_jugador and y > y_jugador:
-        jugador = x_jugador+ABAJO, y_jugador+ABAJO
-        return jugador
-
-    elif x < x_jugador and y < y_jugador:
-        jugador = x_jugador+ARRIBA, y_jugador+ARRIBA
-        return jugador
-
-    elif x > x_jugador and y < y_jugador:
-        jugador = x_jugador+DERECHA, y_jugador+ARRIBA
-        return jugador
-
->>>>>>> 6e723ee745e0fe14d1e55854d426018754017f06
     elif x < x_jugador and y > y_jugador:
         jugador = x_jugador+IZQUIERDA, y_jugador+ABAJO
     
@@ -131,12 +112,8 @@ def teletransportar_jugador(juego):
     Esta función se encarga de teletransportar al jugador a una celda aleatoria del tablero.
     """
     jugador, tablero, puntaje = juego
-<<<<<<< HEAD
-    x, y = generar_celda_aleatoria()
-    jugador = x, y
-=======
     jugador = generar_celda_aleatoria()
->>>>>>> 6e723ee745e0fe14d1e55854d426018754017f06
+
     return jugador, tablero, puntaje
 
 def perseguir_a_jugador(juego):
@@ -164,14 +141,11 @@ def terminado(juego):
     """el juego termina cuadno el jugador se choca con un robot, o sea, una vez que en la posicion 
     x,y hay un robot y el jugador a la vez"""
     posx, posy = juego[0][0], juego[0][1]
-<<<<<<< HEAD
+
     if hay_robot(juego, posx, posy):
         return True
     return False
-=======
-    return hay_n(juego, ROBOT, posx, posy)
-    
->>>>>>> 6e723ee745e0fe14d1e55854d426018754017f06
+
 
 
 #Funciones auxiliares
@@ -191,11 +165,7 @@ def tablero_sin_robots(juego):
                 return False
     return True
 
-<<<<<<< HEAD
 
-
-=======
->>>>>>> 6e723ee745e0fe14d1e55854d426018754017f06
 def acercar_robot(x, y, juego):
     jugador, tablero, nivel = juego 
     x_jugador, y_jugador = jugador
