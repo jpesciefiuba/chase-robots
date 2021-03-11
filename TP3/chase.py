@@ -51,7 +51,7 @@ Cosas que faltan por implementar:
 
 #Funciones principales
 
-def crear_juego():
+def crear_juego(nivel=None):
     """
     Esta función inicializa el estado del juego, con la posición del jugador, y la grilla 
     o tablero donde vana a estar los escombros y los robots en un principio va a estar vacia 
@@ -60,7 +60,10 @@ def crear_juego():
 
     jugador   = generar_celda_aleatoria()
     tablero = crear_tablero()
-    nivel     = 1
+    if nivel is None:
+        nivel = 1
+    else:
+        nivel = nivel
 
     juego = jugador, tablero, nivel
     return juego 
