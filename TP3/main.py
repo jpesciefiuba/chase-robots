@@ -74,7 +74,7 @@ def main():
 
 
                                 
-                    elif chase.terminado(juego):
+                    else:
                         gamelib.draw_begin()    
                         chase.dibujar_game_over()
                         gamelib.draw_end()
