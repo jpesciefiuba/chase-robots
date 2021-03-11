@@ -67,13 +67,15 @@ def crear_juego():
 
 def hay_escombro(juego, x, y):
     jugador, tablero, nivel = juego
-    return tablero[y][x] == ESCOMBRO
-
+    if tablero[y][x] == ESCOMBRO:
+        return True
+    return False
 
 def hay_robot(juego, x, y):
     jugador, tablero, nivel = juego
-    return tablero[y][x] == ROBOT
-
+    if tablero[y][x] == ROBOT:
+        return True
+    return False
 
 def agregar_robots(juego):
     """
@@ -144,10 +146,11 @@ def teletransportar_jugador(juego):
     return jugador, tablero, puntaje
 
 def perseguir_a_jugador(juego):
-    for i in range(ALTO):
-        for j in range(ANCHO):
-            if tablero[j][i] == ROBOT:
-                juegonuevo = acercar_robot(i, j, juego)
+    jugador, tablero, nivel = juego 
+    for y in range(len(tablero)):
+        for x in range(len(tablero[y])):
+            if tablero[y][x] == ROBOT:
+                juegonuevo = acercar_robot(x, y, juego)
                 juego = juegonuevo
     return juego
 
@@ -156,7 +159,6 @@ def avanzar(juego):
     x_jugador, y_jugador = jugador
     if not terminado(juego):
         juego = perseguir_a_jugador(juego)
-
     return juego 
 
 def terminado(juego):
@@ -175,17 +177,45 @@ def acercar_robot(x, y, juego):
     x_jugador, y_jugador = jugador
     x_resultante = x_jugador - x
     y_resultante = y_jugador - y 
-    x_final = x_resultante/abs(x_resultante)
-    y_final = y_resultante/abs(y_resultante)
-    tablero[y][x] = VACIO
-    if tablero[y + y_final][x + x_final]== ESCOMBRO or tablero[y + y_final][x + x_final] == ROBOT:
-        tablero[y + y_final][x + x_final] == ESCOMBRO
-    else:
-        tablero[y + yfinal][x + x_final] == ROBOT
     
-    juego = jugador, tablero, nivel
-    return juego 
+    #Si Y_Resultante es = 0, significa que el jugador y el robot estan en la misma columna, por lo que solo me muevo en x.
+    if y_resultante == 0 and x_resultante != 0:
+        x_final = x_resultante/abs(x_resultante)
+        tablero[y][x] = VACIO
+        if tablero[y][x + int(x_final)] == ESCOMBRO or tablero[y][x + int(x_final)] == ROBOT:
+            tablero[y][x + int(x_final)] = ESCOMBRO
+        else:
+            tablero[y][x + int(x_final)] = ROBOT
+        juego = jugador, tablero, nivel
+        return juego
 
+    #Si X_Resultante es = 0, significa que el jugador y el robot estan en la misma columna, por lo que solo me muevo en Y.
+    elif x_resultante == 0 and y_resultante != 0:
+        y_final = y_resultante/abs(y_resultante)
+        tablero[y][x] = VACIO
+        
+        if tablero[y + int(y_final)][x] == ESCOMBRO or tablero[y + int(y_final)][x] == ROBOT:
+            tablero[y + int(y_final)][x] = ESCOMBRO
+        else:
+            tablero[y + int(y_final)][x] = ROBOT
+        juego = jugador, tablero, nivel
+        return juego
+    
+    #Si X_Resultante e Y_Resultante  es = 0, significa que el jugador y el robot estan en la misma columna, por lo que solo me muevo en x.
+    elif x_resultante != 0 and y_resultante != 0:
+        x_final = x_resultante/abs(x_resultante)
+        y_final = y_resultante/abs(y_resultante)
+        tablero[y][x] = VACIO
+        
+        
+        if tablero[y + int(y_final)][x + int(x_final)] == ESCOMBRO or tablero[y + int(y_final)][x + int(x_final)] == ROBOT:
+            tablero[y + int(y_final)][x + int(x_final)] = ESCOMBRO
+        else:
+            tablero[y + int(y_final)][x + int(x_final)] = ROBOT     
+        juego = jugador, tablero, nivel
+        return juego
+    
+    
 def buscar_n_en_tablero(n, tablero):
     """
     Esta función se encarga de buscar un elemento n dado por parámetro, dentro del tablero del juego, tambien dado por 
@@ -237,10 +267,9 @@ def dibujar_pantalla_de_inicio():
     gamelib.draw_image('media/logointro.gif', 275, ALTO_INTERFAZ//25)
     gamelib.draw_image('media/boton.gif', (ANCHO_INTERFAZ//2)-150, (ALTO_INTERFAZ - ALTO_INTERFAZ//5))
     gamelib.draw_text('Jugar', ANCHO_INTERFAZ//2, (ALTO_INTERFAZ//2+ALTO_INTERFAZ//3+15), anchor = 'c', size = 30)
-
+    
 def dibujar_grilla():
     #Dibujo los bordes del juego.
-    #gamelib.draw_polygon([0, 0, 0, ALTO_INTERFAZ, ANCHO_INTERFAZ, ALTO_INTERFAZ, ANCHO_INTERFAZ, 0], fill='black')
     gamelib.draw_polygon([0, 150, 1350, 150, 1350, 1050, 0, 1050], outline='white', fill='white')
     
     #Dibujo columnas.
