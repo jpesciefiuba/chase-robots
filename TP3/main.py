@@ -49,7 +49,7 @@ def main():
             # El usuario presionó un botón del mouse
             x, y = ev.x, ev.y # averiguamos la posición donde se hizo click
             
-        if (x >= ((ANCHO_INTERFAZ//2)-150) and x <= (((ANCHO_INTERFAZ//2)-MARGEN_SUPERIOR)+MARGEN_SUPERIOR*2)) and (y >= (ALTO_INTERFAZ - ALTO_INTERFAZ//5) and y <= ((ALTO_INTERFAZ - ALTO_INTERFAZ//5)+100)):
+            if (x >= ((ANCHO_INTERFAZ//2)-150) and x <= (((ANCHO_INTERFAZ//2)-MARGEN_SUPERIOR)+MARGEN_SUPERIOR*2)) and (y >= (ALTO_INTERFAZ - ALTO_INTERFAZ//5) and y <= ((ALTO_INTERFAZ - ALTO_INTERFAZ//5)+100)):
                 #Creo un un nuevo juego.
                 juego = chase.crear_juego()
                 chase.agregar_robots(juego)
@@ -69,8 +69,8 @@ def main():
                                 juego = chase.avanzar(juego)
 
 
-                                if (x >= 100 and x <= MARGEN_SUPERIOR) and (y >= ((MARGEN_SUPERIOR/2)/2) and y <= (MARGEN_SUPERIOR/2)/2+75):
-                                    juego = chase.teletransportar_jugador(juego) 
+                            if (x >= 100 and x <= MARGEN_SUPERIOR) and (y >= ((MARGEN_SUPERIOR/2)/2) and y <= (MARGEN_SUPERIOR/2)/2+75):
+                                juego = chase.teletransportar_jugador(juego) 
 
 
                                 
