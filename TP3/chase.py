@@ -60,7 +60,9 @@ def crear_juego(nivel=1):
 
     jugador   = generar_celda_aleatoria()
     tablero = crear_tablero()
+
     juego = jugador, tablero, nivel
+    juego = agregar_robots(juego)
     return juego 
 
 def hay_escombro(juego, x, y):
@@ -91,61 +93,61 @@ def agregar_robots(juego):
             tablero[celda[1]][celda[0]] = 2
         if celda == jugador:
             tablero[celda[1]+1][celda[0]+1] = 2
+    return juego
 
-def trasladar_jugador(jugador, dx, dy):
+def trasladar_jugador(juego, dx, dy):
     """
     Esta función se encarga de tomar las coordenadas x e y donde el usuario clickeo, verifica en que dirección se tiene que mover al jugador
     y lo mueva 1 bloque en dicha dirección.
     """
-    
+    jugador, tablero, nivel = juego
     #Proceso las coordenadas y averiguo en que celda clickeo.
     x, y = int(dx//30), int((dy-150)//30)
     x_jugador, y_jugador = jugador
     
     if x == x_jugador and y == y_jugador:
         return jugador
-    if x == x_jugador:
+    elif x == x_jugador:
         if y > y_jugador:
-            jugador = x_jugador, y_jugador + ABAJO
-            return jugador  
-        if y < y_jugador:
+            jugador = x_jugador, y_jugador + ABAJO 
+        else:
             jugador = x_jugador, y_jugador + ARRIBA
-            return jugador
+
     elif y == y_jugador:
         if x > x_jugador:
             jugador = x_jugador+DERECHA, y_jugador
-            return jugador 
-        if x < x_jugador:    
+        else:    
             jugador = x_jugador+IZQUIERDA, y_jugador
-            return jugador
+
     elif x > x_jugador and y > y_jugador:
         jugador = x_jugador+ABAJO, y_jugador+ABAJO
-        return jugador
+
     elif x < x_jugador and y < y_jugador:
         jugador = x_jugador+ARRIBA, y_jugador+ARRIBA
-        return jugador
+
     elif x > x_jugador and y < y_jugador:
         jugador = x_jugador+DERECHA, y_jugador+ARRIBA
-        return jugador
+        
     elif x < x_jugador and y > y_jugador:
         jugador = x_jugador+IZQUIERDA, y_jugador+ABAJO
-        return jugador
     
+    return jugador
+
+
 def teletransportar_jugador(juego):
     """
     Esta función se encarga de teletransportar al jugador a una celda aleatoria del tablero.
     """
     jugador, tablero, puntaje = juego
-    x = random.randint(0, ANCHO - 1)
-    y = random.randint(0,ALTO - 1)
+    x, y = generar_celda_aleatoria()
     jugador = x, y
     return jugador, tablero, puntaje
 
 def perseguir_a_jugador(juego):
     jugador, tablero, nivel = juego 
     for y in range(len(tablero)):
-        for x in range(len(tablero[y])):
-            if tablero[y][x] == ROBOT:
+        for x in range(len(tablero[0])):
+            if hay_robot(juego, x, y):
                 juegonuevo = acercar_robot(x, y, juego)
                 juego = juegonuevo
     return juego
@@ -166,7 +168,7 @@ def terminado(juego):
     """el juego termina cuadno el jugador se choca con un robot, o sea, una vez que en la posicion 
     x,y hay un robot y el jugador a la vez"""
     posx, posy = juego[0][0], juego[0][1]
-    if hay_robot(juego, posx, posy) or hay_escombro(juego, posx, posy):
+    if hay_robot(juego, posx, posy):
         return True
     return False
 
@@ -177,9 +179,10 @@ def tablero_sin_robots(juego):
     jugador, tablero, nivel = juego
     for y in range(len(tablero)):
         for x in range(len(tablero[0])):
-            if tablero[y][x] == ROBOT:
+            if hay_robot(juego, x, y):
                 return False
     return True
+
 
 
 def acercar_robot(x, y, juego):
@@ -187,9 +190,12 @@ def acercar_robot(x, y, juego):
     x_jugador, y_jugador = jugador
     x_resultante = x_jugador - x
     y_resultante = y_jugador - y 
-    
+
+    if x_resultante == 0 and y_resultante == 0 :
+        return juego
+   
     #Si Y_Resultante es = 0, significa que el jugador y el robot estan en la misma columna, por lo que solo me muevo en x.
-    if y_resultante == 0 and x_resultante != 0:
+    elif x_resultante != 0 and y_resultante == 0 :
         x_final = x_resultante/abs(x_resultante)
         tablero[y][x] = VACIO
         if tablero[y][x + int(x_final)] == ESCOMBRO or tablero[y][x + int(x_final)] == ROBOT:
@@ -202,7 +208,7 @@ def acercar_robot(x, y, juego):
     #Si X_Resultante es = 0, significa que el jugador y el robot estan en la misma columna, por lo que solo me muevo en Y.
     elif x_resultante == 0 and y_resultante != 0:
         y_final = y_resultante/abs(y_resultante)
-        tablero[y][x] = VACIO
+        tablero = actualizar_tablero(VACIO, tablero, x, y)
         
         if tablero[y + int(y_final)][x] == ESCOMBRO or tablero[y + int(y_final)][x] == ROBOT:
             tablero[y + int(y_final)][x] = ESCOMBRO
@@ -215,7 +221,7 @@ def acercar_robot(x, y, juego):
     elif x_resultante != 0 and y_resultante != 0:
         x_final = x_resultante/abs(x_resultante)
         y_final = y_resultante/abs(y_resultante)
-        tablero[y][x] = VACIO
+        tablero = actualizar_tablero(VACIO, tablero, x, y)
         
         
         if tablero[y + int(y_final)][x + int(x_final)] == ESCOMBRO or tablero[y + int(y_final)][x + int(x_final)] == ROBOT:

@@ -16,7 +16,7 @@ VACIO       = 0
 JUGADOR     = 1
 ROBOT       = 2
 ESCOMBRO    = 3
-ESPERA_DESCENDER = 12
+
 
 #CONSTANTES DE DIBUJADO
 ANCHO_INTERFAZ = 1350
@@ -33,7 +33,6 @@ def main():
         gamelib.draw_begin()
         chase.dibujar_pantalla_de_inicio()
         gamelib.draw_end()
-        timer_bajar = ESPERA_DESCENDER
 
         # Esperamos hasta que ocurra un evento
         ev = gamelib.wait()
@@ -64,18 +63,14 @@ def main():
                             x, y = ev.x, ev.y
                             if (x >= 0 and x <= ANCHO_INTERFAZ) and (y >= MARGEN_SUPERIOR and y <= ALTO_INTERFAZ):
                                 jugador, tablero, puntaje = juego
-                                jugador = chase.trasladar_jugador(jugador, ev.x, ev.y)
+                                jugador = chase.trasladar_jugador(juego, ev.x, ev.y)
                                 juego = jugador, tablero, puntaje
-                                juego = chase.perseguir_a_jugador(juego)
+                                juego = chase.avanzar(juego)
 
                             if (x >= 100 and x <= 300) and (y >= ((MARGEN_SUPERIOR/2)/2) and y <= (MARGEN_SUPERIOR/2)/2+75):
                                 juego = chase.teletransportar_jugador(juego) 
 
-                        timer_bajar -= 1
-                        if timer_bajar == 0:
-                            timer_bajar = ESPERA_DESCENDER
-                            # Descender la pieza automáticamente
-                            juego = chase.avanzar(juego)
+
                                 
                     elif chase.terminado(juego):
                         gamelib.draw_begin()    
