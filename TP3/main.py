@@ -69,7 +69,7 @@ def main():
                                 juego = chase.avanzar(juego)
 
 
-                            if (x >= 100 and x <= MARGEN_SUPERIOR) and (y >= ((MARGEN_SUPERIOR/2)/2) and y <= (MARGEN_SUPERIOR/2)/2+75):
+                            elif (x >= 100 and x <= MARGEN_SUPERIOR) and (y >= ((MARGEN_SUPERIOR/2)/2) and y <= (MARGEN_SUPERIOR/2)/2+75):
                                 juego = chase.teletransportar_jugador(juego) 
 
 

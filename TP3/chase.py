@@ -170,14 +170,13 @@ def acercar_robot(x, y, juego):
     x_resultante = x_jugador - x
     y_resultante = y_jugador - y 
 
-
     if x_resultante == 0 and y_resultante == 0 :
         return juego
 
     #Si Y_Resultante es = 0, significa que el jugador y el robot estan en la misma columna, por lo que solo me muevo en x.
     elif x_resultante != 0 and y_resultante == 0 :
         x_final = x_resultante/abs(x_resultante)
-        tablero[y][x] = VACIO
+        tablero = actualizar_tablero(VACIO, tablero, x, y)
         if tablero[y][x + int(x_final)] == ESCOMBRO or tablero[y][x + int(x_final)] == ROBOT:
             tablero[y][x + int(x_final)] = ESCOMBRO
         else:
