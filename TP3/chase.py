@@ -121,8 +121,7 @@ def teletransportar_jugador(juego):
     Esta función se encarga de teletransportar al jugador a una celda aleatoria del tablero.
     """
     jugador, tablero, nivel = juego
-    x, y = generar_celda_aleatoria()
-    jugador = x, y
+    jugador = generar_celda_aleatoria()
     juego = jugador, tablero, nivel
     return juego 
 

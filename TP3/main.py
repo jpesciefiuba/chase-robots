@@ -64,15 +64,13 @@ def main():
                             x, y = ev.x, ev.y
                             if (x >= 0 and x <= ANCHO_INTERFAZ) and (y >= MARGEN_SUPERIOR and y <= ALTO_INTERFAZ):
                                 jugador, tablero, puntaje = juego
-                                jugador = chase.trasladar_jugador(juego, ev.x, ev.y)
+                                jugador = chase.trasladar_jugador(juego, x, y)
                                 juego = jugador, tablero, puntaje
                                 juego = chase.avanzar(juego)
 
 
-                            elif (x >= 100 and x <= MARGEN_SUPERIOR) and (y >= ((MARGEN_SUPERIOR/2)/2) and y <= (MARGEN_SUPERIOR/2)/2+75):
-                                juego = chase.teletransportar_jugador(juego) 
-
-
+                        elif (x >= 100 and x <= 300) and (y >= ((MARGEN_SUPERIOR/2)/2) and y <= (MARGEN_SUPERIOR/2)/2+75):
+                            juego = chase.teletransportar_jugador(juego)
                                 
                     else:
                         gamelib.draw_begin()    
