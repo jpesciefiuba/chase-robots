@@ -54,34 +54,37 @@ def main():
                 juego = chase.crear_juego()
                 chase.agregar_robots(juego)
                 while gamelib.loop(fps=30):
-                    if not chase.terminado(juego):
-                        gamelib.draw_begin()
-                        chase.dibujar_juego(juego)
-                        gamelib.draw_end()
-                        ev = gamelib.wait()
-                        if ev.type == gamelib.EventType.ButtonPress:
-                            x, y = ev.x, ev.y
-                            if (x >= 0 and x <= ANCHO_INTERFAZ) and (y >= MARGEN_SUPERIOR and y <= ALTO_INTERFAZ):
-                                jugador, tablero, puntaje = juego
-                                juego = chase.trasladar_jugador(juego, ev.x, ev.y)
-                                juego = chase.avanzar(juego)
+                    for event in gamelib.get_events():
+                        if not chase.terminado(juego):
 
-                            elif (x >= 100 and x <= 2 * MARGEN_SUPERIOR) and (y >= ((MARGEN_SUPERIOR/2)/2) and y <= (MARGEN_SUPERIOR/2)/2+75):
-                                juego = chase.teletransportar_jugador(juego)
+                            ev = gamelib.wait()
+                            if ev.type == gamelib.EventType.ButtonPress:
+                                x, y = ev.x, ev.y
+                                if (x >= 0 and x <= ANCHO_INTERFAZ) and (y >= MARGEN_SUPERIOR and y <= ALTO_INTERFAZ):
+                                    jugador, robots, tablero, puntaje = juego
+                                    juego = chase.trasladar_jugador(juego, x, y)
+                                    juego = chase.avanzar(juego)
+
+                                elif (x >= 100 and x <= 2 * MARGEN_SUPERIOR) and (y >= ((MARGEN_SUPERIOR/2)/2) and y <= (MARGEN_SUPERIOR/2)/2+75):
+                                    juego = chase.teletransportar_jugador(juego)
+
+                            gamelib.draw_begin() 
+                            chase.dibujar_juego(juego)
+                            gamelib.draw_end()
                                 
-                    if chase.terminado(juego):
-                        gamelib.draw_begin()    
-                        chase.dibujar_game_over()
-                        gamelib.draw_end()
-                        ev = gamelib.wait()
+                        if chase.terminado(juego):
+                            gamelib.draw_begin()    
+                            chase.dibujar_game_over()
+                            gamelib.draw_end()
+                            ev = gamelib.wait()
 
-                        if ev.type == gamelib.EventType.ButtonPress:
-                            # El usuario presionó un botón del mouse
-                            x, y = ev.x, ev.y                          
-                            #Verifico si el usuario quiere volver a jugar
-                            if (x >= (ANCHO_INTERFAZ//2-150) and x <= ((ANCHO_INTERFAZ//2-150)+200)) and (y >= (ALTO_INTERFAZ//2+50) and y <= ((ALTO_INTERFAZ//2+50)+75)):
-                                juego = chase.crear_juego()
-                                chase.agregar_robots(juego)
+                            if ev.type == gamelib.EventType.ButtonPress:
+                                # El usuario presionó un botón del mouse
+                                x, y = ev.x, ev.y                          
+                                #Verifico si el usuario quiere volver a jugar
+                                if (x >= (ANCHO_INTERFAZ//2-150) and x <= ((ANCHO_INTERFAZ//2-150)+200)) and (y >= (ALTO_INTERFAZ//2+50) and y <= ((ALTO_INTERFAZ//2+50)+75)):
+                                    juego = chase.crear_juego()
+                                    chase.agregar_robots(juego)
                                 
         
 gamelib.init(main)

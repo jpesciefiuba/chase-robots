@@ -1,6 +1,7 @@
 # CONSTANTES DE DIMENSIONES
 import gamelib
 import random
+
 ALTO = 30
 ANCHO = 45
 # CONSTANTES DE DIRECCIONES
@@ -18,47 +19,35 @@ ANCHO_INTERFAZ = 1350
 ALTO_INTERFAZ = 1050
 ANCHO_Y_ALTO_CELDA = 30
 MARGEN_SUPERIOR = 150
-"""
-Modificaciones:
--> Hice las funciones de dibujado, podriamos cambiar/mejorar varias cosas pero por el momento nos sirve como un MVP (Minimum Viable Product).
--> Borre algunas funciones como por ejemplo agregar_escombro o agregar_robot y las reemplace por una unica funcion auxiliar a la que le tenemos que pasar
-por parámetro un N para poner en las coordenadas x, y (en el caso de robots serìa 2, etc.)
--> Modifique la funcion trasladar_jugador para que tome las coordenadas x e y donde el usuario clickeo, verifique en que direccion se tiene que mover al jugador
-y lo mueva 1 bloque en dicha direccion.
--> Agregué la función teletransportar que cambia las coordenadas del usuario y en el caso de que se lo teletransporte a una celda con escombros, termine el juego.
--> Modifique la funcion generar_jugador para que no solo la podamos usar para generar una posicion aleatoria para el jugador si no que tambien sirva para generar posiciones 
-aleatorias para colocar los robots en el tablero.
--> Agregué la función agregar robots para agregar los robots al tablero del juego una vez que empieza el juego.
-Cosas que faltan por implementar:
--> IA para mover a los robots
-    -> Funcion que detecte cuando 2 robots choquen y ponga un escombro en esa posicion.
-"""
+
+#otras constantes 
+ROBOTS_POR_NIVEL = 10
 # Funciones principales
 
 
 def crear_juego(nivel=1):
     """
-    Esta función inicializa el estado del juego, con la posición del jugador, y la grilla 
-    o tablero donde vana a estar los escombros y los robots en un principio va a estar vacia 
+    Esta función inicializa el estado del juego, con la posición del jugador, y la grilla
+    o tablero donde vana a estar los escombros y los robots en un principio va a estar vacia
     como estamos creando el juego, el mismo no esta temrinado, o sea wqu ela funcion terminado(juego) devuelve False
     """
 
     jugador = generar_celda_aleatoria()
     tablero = crear_tablero()
 
-    juego = jugador, tablero, nivel
+    juego = jugador, [], tablero, nivel
     juego = agregar_robots(juego)
     return juego
 
 
 def hay_escombro(juego, x, y):
-    jugador, tablero, nivel = juego
+    jugador, robots, tablero, nivel = juego
     return tablero[y][x] == ESCOMBRO
 
 
 def hay_robot(juego, x, y):
-    jugador, tablero, nivel = juego
-    return tablero[y][x] == ROBOT
+    jugador, robots, tablero, nivel = juego
+    return (x, y) in robots
 
 
 def agregar_robots(juego):
@@ -71,13 +60,18 @@ def agregar_robots(juego):
     el robot tomara su lugar. Una posible solucion podria ser en el caso de que sean iguales, se le sume 1 cada coordenada del robot,
     pero esto tiene el riesgo de que se nos vaya del tablero.
     """
-    jugador, tablero, nivel = juego
-    for i in range(10*nivel):
+    jugador, robots, tablero, nivel = juego
+    robots = []
+    for i in range(ROBOTS_POR_NIVEL * nivel):
         celda = generar_celda_aleatoria()
         if celda != jugador:
-            tablero[celda[1]][celda[0]] = ROBOT
-        if celda == jugador:
-            tablero[celda[1]+1][celda[0]+1] = ROBOT
+            robots.append((celda[0], celda[1]))
+
+        elif celda == jugador:
+            robots.append((celda[0] + 1, celda[1] + 1))
+        
+
+    juego = jugador, robots, tablero, nivel
     return juego
 
 
@@ -87,284 +81,293 @@ def trasladar_jugador(juego, dx, dy):
     y lo mueva 1 bloque en dicha dirección.
     """
 
-    jugador, tablero, nivel = juego
+    jugador, robots, tablero, nivel = juego
     # Proceso las coordenadas y averiguo en que celda clickeo.
-    x, y = int(dx//30), int((dy-150)//30)
+    x, y = int(dx // ANCHO_Y_ALTO_CELDA), int((dy - MARGEN_SUPERIOR) // ANCHO_Y_ALTO_CELDA)
     x_jugador, y_jugador = jugador
 
     if x == x_jugador and y == y_jugador:
         return juego
     elif x == x_jugador:
         if y > y_jugador:
-            if tablero[y_jugador + ABAJO][x_jugador] == ESCOMBRO:
-                tablero[y_jugador + ABAJO][x_jugador] = VACIO
-                tablero[y_jugador + ABAJO*2][x_jugador] = ESCOMBRO
-                jugador = x_jugador, y_jugador + ABAJO
-            else:
-                jugador = x_jugador, y_jugador + ABAJO 
+            jugador, tablero = verificar_escombro(jugador, tablero, 0, ABAJO)
         else:
-            jugador = x_jugador, y_jugador + ARRIBA
+            jugador, tablero = verificar_escombro(jugador, tablero, 0, ARRIBA)
 
     elif y == y_jugador:
         if x > x_jugador:
-            if tablero[y_jugador][x_jugador+DERECHA] == ESCOMBRO:
-                tablero[y_jugador][x_jugador+DERECHA] = VACIO
-                tablero[y_jugador][x_jugador+DERECHA*2] = ESCOMBRO
-                jugador = x_jugador+DERECHA, y_jugador
-            else:
-                jugador = x_jugador+DERECHA, y_jugador
-        else:    
-            jugador = x_jugador+IZQUIERDA, y_jugador
+            jugador, tablero = verificar_escombro(jugador, tablero, DERECHA, 0)
+        else:
+            jugador, tablero = verificar_escombro(jugador, tablero, IZQUIERDA, 0)
 
     elif x > x_jugador and y > y_jugador:
-        if tablero[y_jugador+ABAJO][x_jugador+ABAJO] == ESCOMBRO:
-            tablero[y_jugador+ABAJO][x_jugador+ABAJO] = VACIO
-            tablero[y_jugador+ABAJO*2][x_jugador+ABAJO*2] = ESCOMBRO
-            jugador = x_jugador+ABAJO, y_jugador+ABAJO
-        else:
-            jugador = x_jugador+ABAJO, y_jugador+ABAJO
-    
+        jugador, tablero = verificar_escombro(jugador, tablero, DERECHA, ABAJO)
+
     elif x < x_jugador and y < y_jugador:
-        if tablero[y_jugador+ARRIBA][x_jugador+ARRIBA] == ESCOMBRO:
-            tablero[y_jugador+ARRIBA][x_jugador+ARRIBA] = VACIO
-            tablero[y_jugador+ARRIBA*2][x_jugador+ARRIBA*2] = ESCOMBRO
-            jugador = x_jugador+ARRIBA, y_jugador+ARRIBA
-        else:
-            jugador = x_jugador+ARRIBA, y_jugador+ARRIBA
+        jugador, tablero = verificar_escombro(jugador, tablero, IZQUIERDA, ARRIBA)
 
     elif x > x_jugador and y < y_jugador:
-        if tablero[y_jugador+ARRIBA][x_jugador+DERECHA] == ESCOMBRO:
-            tablero[y_jugador+ARRIBA][x_jugador+DERECHA] = VACIO
-            tablero[y_jugador+ARRIBA*2][x_jugador+DERECHA*2] = ESCOMBRO
-            jugador = x_jugador+DERECHA, y_jugador+ARRIBA
-        else:
-            jugador = x_jugador+DERECHA, y_jugador+ARRIBA
-    
+        jugador, tablero = verificar_escombro(jugador, tablero, DERECHA, ARRIBA)
+
     elif x < x_jugador and y > y_jugador:
-        if tablero[y_jugador+ABAJO][x_jugador+IZQUIERDA] == ESCOMBRO:
-            tablero[y_jugador+ABAJO][x_jugador+IZQUIERDA] = VACIO
-            tablero[y_jugador+ABAJO*2][x_jugador+IZQUIERDA*2] = ESCOMBRO
-            jugador = x_jugador+IZQUIERDA, y_jugador+ABAJO
-        else:
-            jugador = x_jugador+IZQUIERDA, y_jugador+ABAJO
-    
-    juego = jugador, tablero, nivel 
+        jugador, tablero = verificar_escombro(jugador, tablero, IZQUIERDA, ABAJO)
+
+    juego = jugador, robots, tablero, nivel
 
     return juego
+
+
+
 
 def teletransportar_jugador(juego):
     """
     Esta función se encarga de teletransportar al jugador a una celda aleatoria del tablero.
     """
-    jugador, tablero, nivel = juego
+    jugador, robots, tablero, nivel = juego
     x, y = generar_celda_aleatoria()
     jugador = x, y
-    juego = jugador, tablero, nivel
-    return juego 
-
-def perseguir_a_jugador(juego):
-    jugador, tablero, nivel = juego 
-    for y in range(len(tablero)):
-        for x in range(len(tablero[0])):
-            if hay_robot(juego, x, y):
-                juegonuevo = acercar_robot(x, y, juego)
-                juego = juegonuevo
+    juego = jugador, robots, tablero, nivel
     return juego
 
+
+def perseguir_a_jugador(juego):
+    """recibe como parametro el estado anterior del juego, luego recorre la lista de posiciones de robots y las pasa por la funcion aceeercar_robot,
+    si la funcion devuelve una tupla, se chequea que esa tupla no este previamente en la lista nueva, si no esta, entonces se la agrega a la nueva lista
+    y si esta en la lista, significa que habria uno en la misma posicion y por lo tanto un choque , entonces se remueve el elemento que ya esta en la lista nueva de posiciones de robots
+    y se pone un escombro en el lugar x,y de la tupla, la nueva lista se transforma en la lista de psoiciones de robots, y se devuelve el nuevo estado del juego
+    y se pone un escombro"""
+    jugador, robots, tablero, nivel = juego 
+    nuevos_robots = []
+    for robot in robots:
+        if hay_robot(juego, robot[0], robot[1]):
+            tupla = acercar_robot(robot, juego)
+            if tupla:
+                if tupla in nuevos_robots:
+                    x,y = tupla
+                    nuevos_robots.remove(tupla)
+                    tablero[y][x] = ESCOMBRO
+                else:
+                    nuevos_robots.append(tupla)
+    juego = jugador, nuevos_robots, tablero, nivel
+    return juego
+
+
 def avanzar(juego):
-    jugador, tablero, nivel = juego 
+    """cada uno de los robots se acercan al jugador, si uno de los robots choca con el jugador se devuelve el mismo estado, sino, 
+    luego se verifica que el tablero ya no tenga robots, sino hay mas, enotnces significa que gano el nivel y se pasa al proximo"""
+    jugador, robots, tablero, nivel = juego
     x_jugador, y_jugador = jugador
     if not terminado(juego):
         juego = perseguir_a_jugador(juego)
         if tablero_sin_robots(juego):
             nivel += 1
             juego = crear_juego(nivel)
-    return juego 
+    return juego
+
 
 def terminado(juego):
-
-    """el juego termina cuadno el jugador se choca con un robot, o sea, una vez que en la posicion 
-    x,y hay un robot y el jugador a la vez"""
-    jugador, tablero, nivel = juego 
+    """
+    Esta función se encarga de verificar si el juego ha terminado o no.
+    El juego en si no tiene fin, se puede jugar ad infinitum, sin embargo, el juego se puede perder y cuando se pierde se termina el juego.
+    Esta funcion verifica si ocurrio algun choque entre un robot y el jugador, y de ser así, da por terminado el juego.
+    """
+    jugador, robots, tablero, nivel = juego
     x_jugador, y_jugador = jugador
-    if hay_robot(juego, x_jugador, y_jugador):
+    if hay_n(juego, ROBOT, x_jugador, y_jugador):
         return True
     return False
 
-#Funciones auxiliares
+
+# Funciones auxiliares
 def tablero_sin_robots(juego):
-    jugador, tablero, nivel = juego
-    for y in range(len(tablero)):
-        for x in range(len(tablero[0])):
-            if hay_robot(juego, x, y):
-                return False
-    return True
+    jugador, robots, tablero, nivel = juego
+    return len(robots) == 0
 
 
-
-def acercar_robot(x, y, juego):
-    jugador, tablero, nivel = juego 
+def acercar_robot(robot, juego):
+    """la funcion toma al robot y al juego, luego teniendo en cuentea las posiciones del jugador, lo que hacer es encontrar un vecetor que vaya en la direccion 
+    desde el robot hacia el jugador, se resta componente a componente con el robot, y se obtiene una x resultante y una y resultante,
+    lo que se hace despues es a ese vector dividirlo por su modulo para que solo se mueva 1 cuadro, luego se forma una tupla con los valores x e y finales,
+    si la tupla es (0,0) o si en le tablero en esa posicion x,y hay un escombro, se devuelve un None, y si no se devuelve la tula x,y con los valores correspondientes a la operacion"""
+    jugador, robots, tablero, nivel = juego 
     x_jugador, y_jugador = jugador
+
+    x = robot[0]
+    y = robot[1]
+
     x_resultante = x_jugador - x
-    y_resultante = y_jugador - y 
+    y_resultante = y_jugador - y
 
 
     if x_resultante == 0 and y_resultante == 0 :
-        return juego
+        tupla = (x,y)
+        return tupla
 
     #Si Y_Resultante es = 0, significa que el jugador y el robot estan en la misma columna, por lo que solo me muevo en x.
-    elif x_resultante != 0 and y_resultante == 0 :
-        x_final = x_resultante/abs(x_resultante)
-        tablero[y][x] = VACIO
-        if tablero[y][x + int(x_final)] == ESCOMBRO or tablero[y][x + int(x_final)] == ROBOT:
-            tablero[y][x + int(x_final)] = ESCOMBRO
-        else:
-            tablero[y][x + int(x_final)] = ROBOT
-        juego = jugador, tablero, nivel
-        return juego
-    #Si X_Resultante es = 0, significa que el jugador y el robot estan en la misma columna, por lo que solo me muevo en Y.
-    elif x_resultante == 0 and y_resultante != 0:
-        y_final = y_resultante/abs(y_resultante)
-        tablero = actualizar_tablero(VACIO, tablero, x, y)
 
-        if tablero[y + int(y_final)][x] == ESCOMBRO or tablero[y + int(y_final)][x] == ROBOT:
-            tablero[y + int(y_final)][x] = ESCOMBRO
-        else:
-            tablero[y + int(y_final)][x] = ROBOT
-        juego = jugador, tablero, nivel
-        return juego
-    
+    x_final = int(x_resultante/abs(x_resultante)) if x_resultante != 0 else 0
+    y_final = int(y_resultante/abs(y_resultante)) if y_resultante != 0 else 0 
+
     #Si X_Resultante e Y_Resultante  es = 0, significa que el jugador y el robot estan en la misma columna, por lo que solo me muevo en x.
-    elif x_resultante != 0 and y_resultante != 0:
-        x_final = x_resultante/abs(x_resultante)
-        y_final = y_resultante/abs(y_resultante)
-        tablero = actualizar_tablero(VACIO, tablero, x, y)
+
+    if tablero[y + y_final][x + x_final] == ESCOMBRO:
+        return None
+    else:
+        tupla = (x + x_final, y + y_final)
+        return  tupla   
+
+    
 
 
-        if tablero[y + int(y_final)][x + int(x_final)] == ESCOMBRO or tablero[y + int(y_final)][x + int(x_final)] == ROBOT:
-            tablero[y + int(y_final)][x + int(x_final)] = ESCOMBRO
-        else:
-            tablero[y + int(y_final)][x + int(x_final)] = ROBOT     
-        juego = jugador, tablero, nivel
-        return juego
-    
-    
 def buscar_n_en_tablero(n, tablero):
     """
-    Esta función se encarga de buscar un elemento n dado por parámetro, dentro del tablero del juego, tambien dado por 
-    parámetro, y devuelve las coordenadas X e Y de nuestra grilla en las que se encuentra dicho valor. 
+    Esta función se encarga de buscar un elemento n dado por parámetro, dentro del tablero del juego, tambien dado por
+    parámetro, y devuelve las coordenadas X e Y de nuestra grilla en las que se encuentra dicho valor.
     """
     resultado = []
     for fila in range(len(tablero)):
         for columna in range(len(tablero[fila])):
-                posicion = columna, fila
-                if tablero[fila][columna] == n:
-                    resultado.append(posicion)
-     
-    return resultado 
+            posicion = columna, fila
+            if tablero[fila][columna] == n:
+                resultado.append(posicion)
+
+    return resultado
+
+
 def crear_tablero():
     """
     Esta función se encarga de crear la grilla donde va a ocurrir el juego.
-    Vamos a empezar el juego con una grilla vacia, en este caso representada por el 
+    Vamos a empezar el juego con una grilla vacia, en este caso representada por el
     valor 0 como aclaramos en las constantes del principio.
-    """ 
+    """
     tablero = [[VACIO] * ANCHO for i in range(ALTO)]
     return tablero
+
+
 def actualizar_tablero(n, tablero, x, y):
     """
-    Esta función auxiliar se encarga de modificar el tablero que guarda el estado del juego actual 
+    Esta función auxiliar se encarga de modificar el tablero que guarda el estado del juego actual
     cambiando la celda elegida por el valor N dado por parámetro.
     Esta función puede ser utilizada para, por ejemplo, modificar el estado de una celda cuando 2 robots se chochan entre si,
     """
     tablero[y][x] = n
-    
+
     return tablero
+
+
 def generar_celda_aleatoria():
     """
     Esta función devuelve una tupla con un par de valores (x, y) aleatorios dentro del tablero.
     """
     x = random.randint(0, ANCHO - 1)
-    y = random.randint(0,ALTO - 1)
+    y = random.randint(0, ALTO - 1)
     return x, y
-#Funciones de dibujado
+
+def hay_n(juego, n, x, y):
+    """
+    Esta función auxiliar permite verificar si en ciertas coordenadas x e y se encuentra o no un N especifico.
+    Esta función está pensada para solamente buscar robots y escombros en el juego.
+    """
+    jugador, robots, tablero, nivel = juego
+    if n == ROBOT:
+        return (x, y) in robots
+    return tablero[y][x] == ESCOMBRO
 
 
+def verificar_escombro(jugador, tablero, dx, dy):
+    """
+    Esta función se encarga de, dadas ciertas coordenadas x e y a las cuales el jugador esta intentando moverse, verificar
+    si en dichas coordenadas se encuentra un escombro o es una celda vacia. En el caso de que haya un escombro, lo "empujará"
+    una celda en la misma dirección y sentido en la que se desplaza el jugador.
+    """
+    x_jugador, y_jugador = jugador
+    if tablero[y_jugador + dy][x_jugador + dx] == ESCOMBRO:
+        if  y_jugador + dy * 2 < 0 or y_jugador + dy * 3 > ALTO or x_jugador + dx * 3 > ANCHO or x_jugador + dx * 2 < 0 :
+            return jugador, tablero
+
+        tablero[y_jugador + dy][x_jugador + dx] = VACIO
+        tablero[y_jugador + dy * 2][x_jugador + dx * 2] = ESCOMBRO
+        nuevojugador = x_jugador + dx, y_jugador + dy
+    else:
+        nuevojugador = x_jugador + dx, y_jugador + dy
+    
+    return nuevojugador, tablero
+
+
+
+#funciones de dibujo
 
 def dibujar_pantalla_de_inicio():
     """
     Esta función se encarga de dibujar la pantalla de inicio del juego.
     """
-    gamelib.draw_image('media/logointro.gif', 275, ALTO_INTERFAZ//25)
-    gamelib.draw_image('media/boton.gif', (ANCHO_INTERFAZ//2)-150, (ALTO_INTERFAZ - ALTO_INTERFAZ//5))
-    gamelib.draw_text('Jugar', ANCHO_INTERFAZ//2, (ALTO_INTERFAZ//2+ALTO_INTERFAZ//3+15), anchor = 'c', size = 30)
-    
+    gamelib.draw_image('media/logointro.gif', 275, ALTO_INTERFAZ // 25)
+    gamelib.draw_image('media/boton.gif', (ANCHO_INTERFAZ // 2) - MARGEN_SUPERIOR, (ALTO_INTERFAZ - ALTO_INTERFAZ // 5))
+    gamelib.draw_text('Jugar', ANCHO_INTERFAZ // 2, (ALTO_INTERFAZ // 2 + ALTO_INTERFAZ // 3 + 15), anchor='c', size=30)
+
 def dibujar_grilla():
-    #Dibujo los bordes del juego.
-    gamelib.draw_polygon([0, 150, 1350, 150, 1350, 1050, 0, 1050], outline='white', fill='white')
-    
-    #Dibujo columnas.
+    # Dibujo los bordes del juego.
+    gamelib.draw_polygon([0, MARGEN_SUPERIOR, 1350, MARGEN_SUPERIOR, 1350, 1050, 0, 1050], outline='white', fill='white')
+
+    # Dibujo columnas.
     for i in range(ANCHO):
-        gamelib.draw_line(0+i*ANCHO_Y_ALTO_CELDA, 150, 0+i*ANCHO_Y_ALTO_CELDA, 1050, fill='black', width=1)
-        
-    #Dibujo filas.
+        gamelib.draw_line(0 + i * ANCHO_Y_ALTO_CELDA, MARGEN_SUPERIOR, 0 + i * ANCHO_Y_ALTO_CELDA, 1050, fill='black', width=1)
+
+    # Dibujo filas.
     for i in range(ALTO):
-        gamelib.draw_line(0, 150+i*ANCHO_Y_ALTO_CELDA, 1350, 150+i*ANCHO_Y_ALTO_CELDA, fill='black', width=1)
+        gamelib.draw_line(0, MARGEN_SUPERIOR + i * ANCHO_Y_ALTO_CELDA, 1350, MARGEN_SUPERIOR + i * ANCHO_Y_ALTO_CELDA, fill='black', width=1)
+
 def dibujar_panel_superior(juego):
     """
     Esta función se encarga de dibujar todo lo que se encuentra en la parte superior del tablero del juego.
     """
-    #Dibujo logo del juego
-    gamelib.draw_image("media/logo.gif", ANCHO_INTERFAZ//2-200, 0)
-    #Dibujo boton de teletransportación.
-    gamelib.draw_image("media/botonchico.gif", 100, (MARGEN_SUPERIOR/2)/2)
-    gamelib.draw_text("Teleport",200,MARGEN_SUPERIOR/2, size = 20)
-    #Dibujo nivel
-    gamelib.draw_text("Nivel:", ANCHO_INTERFAZ-250, MARGEN_SUPERIOR/2, size = 20)
-    gamelib.draw_text(juego[2], ANCHO_INTERFAZ-200, MARGEN_SUPERIOR/2, size = 20)
+    # Dibujo logo del juego
+    gamelib.draw_image("media/logo.gif", ANCHO_INTERFAZ // 2 - 200, 0)
+    
+    # Dibujo boton de teletransportación.
+    gamelib.draw_image("media/botonchico.gif", 100, (MARGEN_SUPERIOR / 2) / 2)
+    gamelib.draw_text("Teleport", 200, MARGEN_SUPERIOR / 2, size=20)
+    
+    # Dibujo nivel
+    gamelib.draw_text("Nivel:", ANCHO_INTERFAZ - 250, MARGEN_SUPERIOR / 2, size=20)
+    gamelib.draw_text(juego[3], ANCHO_INTERFAZ - 200, MARGEN_SUPERIOR / 2, size=20)
+
 def dibujar_juego(juego):
     """
     Esta función se encarga de dibujar la grilla del juego, los escombros que hay en la grilla
     """
     gamelib.draw_rectangle(0, 0, ANCHO_INTERFAZ, ALTO_INTERFAZ, fill='black')
-    #Dibujo panel superior
-    dibujar_panel_superior(juego)
-    #Dibujo grilla
-    dibujar_grilla()
-    #Dibujo robots.
-    robots = buscar_n_en_tablero(2, juego[1])
-    for i in range(len(robots)):
-        x_celda = robots[i][0]
-        y_celda = robots[i][1]
-        gamelib.draw_image("media/robot.gif", ANCHO_Y_ALTO_CELDA*x_celda, 150+ANCHO_Y_ALTO_CELDA*y_celda)
     
-    #Dibujo escombros
-    escombros = buscar_n_en_tablero(3, juego[1])
+    # Dibujo panel superior
+    dibujar_panel_superior(juego)
+    
+    # Dibujo grilla
+    dibujar_grilla()
+    
+    # Dibujo robots.
+    robots = juego[1]
+    for robot in robots:
+        x_celda, y_celda = robot[0], robot[1]
+        gamelib.draw_image("media/robot.gif", ANCHO_Y_ALTO_CELDA * x_celda, MARGEN_SUPERIOR + ANCHO_Y_ALTO_CELDA * y_celda)
+
+    # Dibujo escombros
+    escombros = buscar_n_en_tablero(3, juego[2])
     for i in range(len(escombros)):
-        x_celda = escombros[i][0]
-        y_celda = escombros[i][1]
-        gamelib.draw_image("media/escombros.gif", ANCHO_Y_ALTO_CELDA*x_celda, 150+ANCHO_Y_ALTO_CELDA*y_celda)
-    #Dibujo jugador
+        x_celda, y_celda = escombros[i][0], escombros[i][1]
+        gamelib.draw_image("media/escombros.gif", ANCHO_Y_ALTO_CELDA * x_celda, MARGEN_SUPERIOR + ANCHO_Y_ALTO_CELDA * y_celda)
+    
+    # Dibujo jugador
     jugador = juego[0]
-    x_celda = jugador[0]
-    y_celda = jugador[1]
-    gamelib.draw_image("media/astronauta.gif", 1+ANCHO_Y_ALTO_CELDA*x_celda, 150+ANCHO_Y_ALTO_CELDA*y_celda)
+    x_celda, y_celda = jugador[0], jugador[1]
+    gamelib.draw_image("media/astronauta.gif", 1 + ANCHO_Y_ALTO_CELDA * x_celda, MARGEN_SUPERIOR + ANCHO_Y_ALTO_CELDA * y_celda)
+
 def dibujar_game_over():
     """
-    Esta función dibuja en pantalla un cartel que indica game over en pantalla una vez que ha terminado el juego 
+    Esta función dibuja en pantalla un cartel que indica game over en pantalla una vez que ha terminado el juego
     y le pregunta al usuario si quiere volver a jugar.
     """
     gamelib.draw_rectangle(0, 0, ANCHO_INTERFAZ, ALTO_INTERFAZ, fill='black')
-    gamelib.draw_text('GAME OVER', ANCHO_INTERFAZ//2, ALTO_INTERFAZ//2 - MARGEN_SUPERIOR//2, size = 80, fill = 'red')
-    gamelib.draw_image('media/boton.gif', ANCHO_INTERFAZ//2-150, ALTO_INTERFAZ//2+50)
-    gamelib.draw_text('Volver', ANCHO_INTERFAZ//2, ALTO_INTERFAZ//2+80, size = 20)
-    gamelib.draw_text('a jugar', ANCHO_INTERFAZ//2, ALTO_INTERFAZ//2+110, size = 20)
-def dibujar_ganaste():
-    """
-    Esta función dibuja en pantalla un cartel que indica que el jugador ganó el juego, esto ocurrira cuando pase de nivel.
-    """
-    gamelib.draw_rectangle(0, 0, ANCHO_INTERFAZ, ALTO_INTERFAZ, fill='black')
-    gamelib.draw_text('¡GANASTE!', ANCHO_INTERFAZ//2, ALTO_INTERFAZ//2 - MARGEN_SUPERIOR//2, size = 80, fill = 'green')
-    gamelib.draw_image('media/boton.gif', ANCHO_INTERFAZ//2-150, ALTO_INTERFAZ//2+50)
-    gamelib.draw_text('Volver', ANCHO_INTERFAZ//2, ALTO_INTERFAZ//2+80, size = 20)
-    gamelib.draw_text('a jugar', ANCHO_INTERFAZ//2, ALTO_INTERFAZ//2+110, size = 20)
-    
+    gamelib.draw_text('GAME OVER', ANCHO_INTERFAZ // 2, ALTO_INTERFAZ // 2 - MARGEN_SUPERIOR // 2, size=80, fill='red')
+    gamelib.draw_image('media/boton.gif', ANCHO_INTERFAZ // 2 - MARGEN_SUPERIOR, ALTO_INTERFAZ // 2 + 50)
+    gamelib.draw_text('Volver', ANCHO_INTERFAZ // 2, ALTO_INTERFAZ // 2 + 80, size=20)
+    gamelib.draw_text('a jugar', ANCHO_INTERFAZ // 2, ALTO_INTERFAZ // 2 + 110, size=20)

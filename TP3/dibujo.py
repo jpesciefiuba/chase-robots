@@ -4,7 +4,7 @@ ANCHO   = 45
 
 ANCHO_INTERFAZ = 1500
 ALTO_INTERFAZ = 1000
-
+import chase
 import gamelib
 
 def dibujar_pantalla_de_inicio():
